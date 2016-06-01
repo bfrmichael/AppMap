@@ -1,0 +1,36 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.michael.appmap.MapsActivity" />
+
+    <ImageView
+        android:id="@+id/foto"
+        android:layout_width="50dip"
+        android:layout_height="fill_parent"
+        android:scaleType="center" />
+
+    <Button
+        android:id="@+id/incluir_ocorrencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="incluirOcorrencia"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="@dimen/place_autocomplete_prediction_horizontal_margin"
+        android:layout_marginBottom="@dimen/place_autocomplete_prediction_horizontal_margin"
+        android:background="@color/colorPrimary"
+        android:shadowColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorTextWhite"
+        android:text="@string/button_incluir_ocorrencia" />
+
+</FrameLayout>
+
