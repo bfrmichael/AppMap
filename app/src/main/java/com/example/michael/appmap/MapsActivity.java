@@ -1,12 +1,14 @@
 package com.example.michael.appmap;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -21,14 +23,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ListView list;
     private JSONArray result;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-//    ImageView viewImagemEnviada;
+    private Uri uriSaveImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,27 +84,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void incluirOcorrencia(View v) {
-        Intent intent = new Intent(IncluirOcorrenciaActivity.ACAO_INCLUIR_OCORRENCIA);
-        intent.addCategory(IncluirOcorrenciaActivity.CATEGORIA_INCLUIR_OCORRENCIA);
-        startActivity(intent);
 
-//        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if(camera.resolveActivity(getPackageManager()) != null) {
-//            startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
-//        }
+        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+
+        File folder = new File(Environment.getExternalStorageDirectory(), "AppMap");
+        folder.mkdirs();
+
+        String imageUri = "app_map_" + timeStamp + ".jpg";
+        File imageName = new File(folder, imageUri);
+        //Uri uriSavemImagemHD = Uri.fromFile(imageName);
+        uriSaveImage = Uri.parse(imageUri);
+
+        if(camera.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
+        }
+
     }
+
+
+    @Override
+    protected void onActivityResult(int requisicaoDado, int resultadoDado, Intent dado) {
+        if(requisicaoDado == REQUEST_IMAGE_CAPTURE && resultadoDado == RESULT_OK) {
+            Bundle extras = dado.getExtras();
+            Bitmap imagemBitmap = (Bitmap) extras.get("data");
+
+            //chama a activity responsável por fornecer interface para prenchimento das informações da ocorrência
+            Intent intent = new Intent(IncluirOcorrenciaActivity.ACAO_INCLUIR_OCORRENCIA);
+            intent.addCategory(IncluirOcorrenciaActivity.CATEGORIA_INCLUIR_OCORRENCIA);
+            intent.putExtra("imagem", imagemBitmap);
+            intent.putExtra("file_name", uriSaveImage);
+            startActivity(intent);
+        }
+    }
+
+//    public void getImageCamera() {
+//        new AsyncTask<Void, Void, String>() {
 //
-//    @Override
-//    protected void onActivityResult(int requisicaoDado, int resultadoDado, Intent dado) {
-//        if(requisicaoDado == REQUEST_IMAGE_CAPTURE && resultadoDado == RESULT_OK) {
-//            Bundle extras = dado.getExtras();
-//            Bitmap imagemBitmap = (Bitmap) extras.get("data");
-//            viewImagemEnviada = (ImageView) findViewById(R.id.foto);
-//            viewImagemEnviada.setImageBitmap(imagemBitmap);
-//        }
+//            @Override
+//            protected String doInBackground(Void... params) {
+//
+//                Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+//
+//                File folder = new File(Environment.getExternalStorageDirectory(), "AppMap");
+//                folder.mkdirs();
+//
+//                imageName = new File(folder, "QR_" + timeStamp + ".jpg");
+//                Uri uriSaveImage = Uri.fromFile(imageName);
+//
+//                if(camera.resolveActivity(getPackageManager()) != null) {
+//                    camera.putExtra(MediaStore.EXTRA_OUTPUT, uriSaveImage);
+//                    startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
+//                }
+//
+//                return "";
+//            }
+//
+//            @Override
+//            protected void onPostExecute(String result) {
+//                super.onPostExecute(result);
+//            }
+//        }.execute(null, null, null);
 //    }
 
     private class ListOccurrenceTask extends AsyncTask<String, Void, JSONArray> {
+
+        @Override
+        protected void onPreExecute() {}
 
         @Override
         protected JSONArray doInBackground(String... params) {
@@ -120,7 +174,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return result;
 
             } catch(Exception e) {
-                Log.e(getPackageName(), e.getMessage(), e);
                 return null;
             }
 
@@ -130,9 +183,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(JSONArray result) {
             super.onPostExecute(result);
         }
-
-        @Override
-        protected void onPreExecute() {}
 
         @Override
         protected void onProgressUpdate(Void... values){}
