@@ -13,11 +13,7 @@
         android:layout_height="match_parent"
         tools:context="com.example.michael.appmap.MapsActivity" />
 
-    <ImageView
-        android:id="@+id/foto"
-        android:layout_width="50dip"
-        android:layout_height="fill_parent"
-        android:scaleType="center" />
+    <include android:id="@+id/toolbar" layout="@layout/toolbar" />
 
     <Button
         android:id="@+id/incluir_ocorrencia"
@@ -28,9 +24,8 @@
         android:layout_marginRight="@dimen/place_autocomplete_prediction_horizontal_margin"
         android:layout_marginBottom="@dimen/place_autocomplete_prediction_horizontal_margin"
         android:background="@color/colorPrimary"
-        android:shadowColor="@color/colorPrimaryDark"
+        android:shadowColor="@color/colorTextBlack"
         android:textColor="@color/colorTextWhite"
         android:text="@string/button_incluir_ocorrencia" />
 
 </FrameLayout>
-

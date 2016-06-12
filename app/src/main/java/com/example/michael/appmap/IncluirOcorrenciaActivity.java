@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -69,7 +70,6 @@ public class IncluirOcorrenciaActivity extends Activity {
 
         Editable titulo  = this.titulo.getText();
         Editable descricao = this.descricao.getText();
-        this.exibir.setText(String.valueOf(fileNameImage));
 
         Double latitude = null;
         Double longitude = null;
@@ -83,6 +83,9 @@ public class IncluirOcorrenciaActivity extends Activity {
             gps.showSettingsAlert();
         }
 
+        //pega id de item selecionado na Spinner
+        long idCategoria = categoria.getSelectedItemId();
+
         //cria instância e seta valores de ocorrência
         Ocorrencia o = new Ocorrencia();
         o.setTitulo(titulo.toString());
@@ -95,13 +98,16 @@ public class IncluirOcorrenciaActivity extends Activity {
         ocorrencia.put("description", o.getDescricao());
         ocorrencia.put("latitude", String.valueOf(o.getLatitude()));
         ocorrencia.put("longitude", String.valueOf(o.getLongitude()));
-        ocorrencia.put("id_category", "1");
+        ocorrencia.put("id_category", String.valueOf(idCategoria));
         ocorrencia.put("id_status", "1");
         ocorrencia.put("id_user", "1");
         ocorrencia.put("image", encodeImageString);
         ocorrencia.put("file_name", String.valueOf(fileNameImage));
 
         new InsertOccurrenceAsync().execute();
+
+        this.exibir.setText("Ocorrência cadastrada. Obrigado!");
+
     }
 
     //async para codificar imagem em formado base64

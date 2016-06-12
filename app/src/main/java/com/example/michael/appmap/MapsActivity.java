@@ -1,6 +1,5 @@
 package com.example.michael.appmap;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,14 +8,16 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
-import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -26,10 +27,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+//    private Toolbar toolbar;
     private GoogleMap mMap;
     private JSONArray result;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -43,12 +46,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+//        toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupport
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu, menu);
+//        return true;
+//    }
 
 
     /**
@@ -66,20 +78,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
 
-            for(int i = 0; i < result.length(); i++) {
+            if(result != null) {
 
-                JSONObject o = result.getJSONObject(i);
+                for (int i = 0; i < result.length(); i++) {
 
-                LatLng ocorrencia = new LatLng(Double.parseDouble(o.getString("latitude")), Double.parseDouble(o.getString("longitude")));
-                mMap.addMarker(new MarkerOptions().position(ocorrencia).title(o.getString("titulo")));
+                    JSONObject o = result.getJSONObject(i);
+
+                    LatLng ocorrencia = new LatLng(Double.parseDouble(o.getString("latitude")), Double.parseDouble(o.getString("longitude")));
+                    mMap.addMarker(new MarkerOptions().position(ocorrencia).title(o.getString("titulo")).snippet(String.valueOf(o)));
+
+                }
+
+            } else {
+                new ListOccurrenceTask().execute();
             }
 
             LatLng moveCamera = new LatLng(-16.0648249, -48.0525738);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(moveCamera, 10));
 
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    String jsonOcorrencia = marker.getSnippet();
+                    visualizarOcorrencia(jsonOcorrencia);
+                }
+            });
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+
+    public void visualizarOcorrencia(String jsonOcorrencia) {
+
+        Intent ocorrenciaIntent = new Intent(OcorrenciaActivity.ACAO_OCORRENCIA);
+        ocorrenciaIntent.addCategory(OcorrenciaActivity.CATEGORIA_OCORRENCIA);
+        ocorrenciaIntent.putExtra("json_ocorrencia", jsonOcorrencia);
+        startActivity(ocorrenciaIntent);
 
     }
 
@@ -119,36 +156,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-//    public void getImageCamera() {
-//        new AsyncTask<Void, Void, String>() {
-//
-//            @Override
-//            protected String doInBackground(Void... params) {
-//
-//                Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//                String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-//
-//                File folder = new File(Environment.getExternalStorageDirectory(), "AppMap");
-//                folder.mkdirs();
-//
-//                imageName = new File(folder, "QR_" + timeStamp + ".jpg");
-//                Uri uriSaveImage = Uri.fromFile(imageName);
-//
-//                if(camera.resolveActivity(getPackageManager()) != null) {
-//                    camera.putExtra(MediaStore.EXTRA_OUTPUT, uriSaveImage);
-//                    startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
-//                }
-//
-//                return "";
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String result) {
-//                super.onPostExecute(result);
-//            }
-//        }.execute(null, null, null);
-//    }
 
     private class ListOccurrenceTask extends AsyncTask<String, Void, JSONArray> {
 
@@ -169,7 +176,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 JSONObject jsonObject = new JSONObject(content);
 
                 //recupera conteúdo json com atributo "content"
-                result = jsonObject.getJSONArray("content");
+                JSONArray ocorrencias = jsonObject.getJSONArray("content");
+
+                if(ocorrencias.length() > 0) {
+                    result = ocorrencias;
+                } else {
+                    result = null;
+                }
 
                 return result;
 
