@@ -5,12 +5,21 @@ package com.example.michael.appmap;
  */
 public class Ocorrencia {
 
+    private int id;
     private String titulo;
     private String descricao;
     private String imagem;
     private Double latitude;
     private Double longitude;
     private String data;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return this.id;
+    }
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;

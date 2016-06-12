@@ -6,11 +6,17 @@
     <string name="titulo_ocorrencia">Título</string>
     <string name="descricao_ocorrencia">Descrição</string>
     <string name="categoria_ocorrencia">Categoria</string>
+    <string name="data_ocorrencia">Data do Cadastro</string>
+    <string name="latitude_ocorrencia">Latitude</string>
+    <string name="longitude_ocorrencia">Longitude</string>
+    <string name="usuario_ocorrencia">Usuário</string>
     <string name="spinner_categoria_ocorrencia">Categoria</string>
     
     <string-array name="opcoes_categoria_ocorrencia">
         <item>Iluminação Pública</item>
-        <item>Buraco na Via</item>
         <item>Saneamento Básico</item>
+        <item>Limpeza Urbana</item>
+        <item>Pavimentação Asfáltica</item>
+        <item>Outros</item>
     </string-array>
 </resources>
