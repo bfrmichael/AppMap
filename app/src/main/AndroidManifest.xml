@@ -53,10 +53,18 @@
         </activity>
 
         <activity
-            android:name=".OcorrenciaActivity" >
+            android:name=".OcorrenciaActivity">
             <intent-filter>
                 <action android:name="appmap.ACAO_OCORRENCIA" />
                 <category android:name="appmap.CATEGORIA_OCORRENCIA" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".UltimasActivity">
+            <intent-filter>
+                <action android:name="appmap.ACAO_ULTIMAS_OCORRENCIAS" />
+                <category android:name="appmap.CATEGORIA_ULTIMAS_OCORRENCIAS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
