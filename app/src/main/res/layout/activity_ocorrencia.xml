@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp">
+
+        <ImageView
+            android:id="@+id/imagem_activity_ocorrencia"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/titulo_activity_ocorrencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:text="Título" />
+
+        <TextView
+            android:id="@+id/descricao_activity_ocorrencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descrição" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/categoria_ocorrencia"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textColor="@color/colorTextBlack"/>
+
+        <TextView
+            android:id="@+id/categoria_activity_ocorrencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0,1,2">
+
+            <TableRow>
+
+                <TextView
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:text="@string/latitude_ocorrencia"
+                    android:textColor="@color/colorTextBlack"/>
+
+                <TextView
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:text="@string/longitude_ocorrencia"
+                    android:textColor="@color/colorTextBlack"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/latitude_activity_ocorrencia"/>
+
+                <TextView
+                    android:id="@+id/longitude_activity_ocorrencia"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/data_ocorrencia"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorTextBlack"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/usuario_ocorrencia"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorTextBlack"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/data_activity_ocorrencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/usuario_activity_ocorrencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
