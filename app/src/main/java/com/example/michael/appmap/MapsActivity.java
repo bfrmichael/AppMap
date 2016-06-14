@@ -8,8 +8,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,7 +25,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -120,6 +117,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public void listarUltimasOcorrencias(View v) {
+
+        Intent ultimasIntent = new Intent(UltimasActivity.ACAO_ULTIMAS_OCORRENCIAS);
+        ultimasIntent.addCategory(UltimasActivity.CATEGORIA_ULTIMAS_OCORRENCIAS);
+        startActivity(ultimasIntent);
+
+    }
+
     public void incluirOcorrencia(View v) {
 
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -196,9 +201,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(JSONArray result) {
             super.onPostExecute(result);
         }
-
-        @Override
-        protected void onProgressUpdate(Void... values){}
 
     }
 
