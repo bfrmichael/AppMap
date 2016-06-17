@@ -1,8 +1,10 @@
 package com.example.michael.appmap;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +24,6 @@ public class OcorrenciaActivity extends Activity {
     private TextView data;
     private TextView latitude;
     private TextView longitude;
-    private TextView usuario;
     private ImageView imagem;
     public static final String ACAO_OCORRENCIA = "appmap.ACAO_OCORRENCIA";
     public static final String CATEGORIA_OCORRENCIA = "appmap.CATEGORIA_OCORRENCIA";
@@ -42,10 +43,35 @@ public class OcorrenciaActivity extends Activity {
         this.data = (TextView) findViewById(R.id.data_activity_ocorrencia);
         this.latitude = (TextView) findViewById(R.id.latitude_activity_ocorrencia);
         this.longitude = (TextView) findViewById(R.id.longitude_activity_ocorrencia);
-        this.usuario = (TextView) findViewById(R.id.usuario_activity_ocorrencia);
         this.imagem = (ImageView) findViewById(R.id.imagem_activity_ocorrencia);
 
         exibirDetalhesOcorrencia();
+
+    }
+
+    public void compartilharOcorrencia(View v) {
+
+        Double latUsuario = null;
+        Double lonUsuario = null;
+
+        //pega localização atual do usuário
+        GPSTracker gps = new GPSTracker(OcorrenciaActivity.this);
+        if( gps.canGetLocation() ) {
+            latUsuario = gps.getLatitude();
+            lonUsuario = gps.getLongitude();
+        } else {
+            gps.showSettingsAlert();
+        }
+
+        //pega localidade da ocorrencia selecionada
+        String latOcorrencia = (String) this.latitude.getText();
+        String lonOcorrencia = (String) this.longitude.getText();
+
+        String url = Uri.parse("https://www.google.com.br/maps?saddr=" + latUsuario + "," + lonUsuario + "&daddr=" + latOcorrencia + "," + lonOcorrencia).toString();
+        //String url = Uri.parse("geo:" + latitude + "," + longitude).toString();
+
+        Intent compartilhar = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(compartilhar);
 
     }
 
@@ -72,7 +98,6 @@ public class OcorrenciaActivity extends Activity {
             this.data.setText(o.getString("data"));
             this.latitude.setText(o.getString("latitude"));
             this.longitude.setText(o.getString("longitude"));
-            this.usuario.setText((o.getString("usuario")));
 
         } catch(Exception e) {
             e.printStackTrace();

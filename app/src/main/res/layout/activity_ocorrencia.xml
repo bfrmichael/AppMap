@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/windowBackgroundDark">
+
+    <include android:id="@+id/toolbar_ocorrencia" layout="@layout/toolbar_ocorrencia" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,33 +18,25 @@
             android:id="@+id/imagem_activity_ocorrencia"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/titulo_activity_ocorrencia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30dp"
+            android:textColor="@color/textColorPrimary"
+            android:textStyle="bold"
+            android:textSize="25dp"
             android:text="Título" />
 
         <TextView
             android:id="@+id/descricao_activity_ocorrencia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textStyle="italic"
+            android:textColor="@color/textColorPrimaryDark"
             android:text="Descrição" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/categoria_ocorrencia"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textColor="@color/colorTextBlack"/>
-
-        <TextView
-            android:id="@+id/categoria_activity_ocorrencia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -51,46 +46,45 @@
             <TableRow>
 
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    android:text="@string/latitude_ocorrencia"
-                    android:textColor="@color/colorTextBlack"/>
-
-                <TextView
-                    android:textAllCaps="true"
-                    android:textStyle="bold"
-                    android:text="@string/longitude_ocorrencia"
-                    android:textColor="@color/colorTextBlack"/>
+                    android:text="@string/coordenadas_ocorrencia"
+                    android:textColor="@color/colorPrimary"/>
 
             </TableRow>
 
             <TableRow>
 
                 <TextView
-                    android:id="@+id/latitude_activity_ocorrencia"/>
+                    android:id="@+id/latitude_activity_ocorrencia"
+                    android:textColor="@color/textColorPrimary" />
 
                 <TextView
-                    android:id="@+id/longitude_activity_ocorrencia"/>
+                    android:id="@+id/longitude_activity_ocorrencia"
+                    android:textColor="@color/textColorPrimary" />
 
             </TableRow>
 
             <TableRow>
 
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/data_ocorrencia"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    android:textColor="@color/colorTextBlack"/>
+                    android:textColor="@color/colorPrimary"/>
 
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/usuario_ocorrencia"
+                    android:text="@string/categoria_ocorrencia"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    android:textColor="@color/colorTextBlack"/>
+                    android:textColor="@color/colorPrimary"/>
 
             </TableRow>
 
@@ -99,12 +93,14 @@
                 <TextView
                     android:id="@+id/data_activity_ocorrencia"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorPrimary" />
 
                 <TextView
-                    android:id="@+id/usuario_activity_ocorrencia"
+                    android:id="@+id/categoria_activity_ocorrencia"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorPrimary" />
 
             </TableRow>
 

@@ -8,10 +8,14 @@
     <string name="descricao_ocorrencia">Descrição</string>
     <string name="categoria_ocorrencia">Categoria</string>
     <string name="data_ocorrencia">Data do Cadastro</string>
+    <string name="coordenadas_ocorrencia">Coordenadas</string>
     <string name="latitude_ocorrencia">Latitude</string>
     <string name="longitude_ocorrencia">Longitude</string>
     <string name="usuario_ocorrencia">Usuário</string>
-    <string name="spinner_categoria_ocorrencia">Categoria</string>
+    <string name="usuario_ocorrencia_opcional">Seu Email (opcional)</string>
+    <string name="spinner_categoria_ocorrencia">Selecione uma Categoria:</string>
+    <string name="incluir_ocorrencia_msg_sucesso">Ocorrência cadastrada com sucesso. Obrigado!</string>
+    <string name="dialog_ok">OK</string>
     
     <string-array name="opcoes_categoria_ocorrencia">
         <item>Iluminação Pública</item>

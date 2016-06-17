@@ -8,7 +8,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,15 +30,20 @@ import org.json.JSONObject;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-//    private Toolbar toolbar;
+    private Button btnAtualizar;
     private GoogleMap mMap;
-    private JSONArray result;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private TextView jsonOcorrencia;
+    private JSONArray resultx;
+    static final int REQUEST_IMAGE_CAPTURE = 0;
+    static final int REQUEST_INCLUIR = 1;
     private Uri uriSaveImage;
+    private JSONObject o;
+    private HashMap<Marker, Ocorrencia> hashMapMarcadores = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-//        toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupport
+        btnAtualizar = (Button) findViewById(R.id.button_atualizar);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -52,12 +61,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu, menu);
-//        return true;
-//    }
 
 
     /**
@@ -73,49 +76,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        try {
+        prepararMapa("semFiltro");
 
-            if(result != null) {
-
-                for (int i = 0; i < result.length(); i++) {
-
-                    JSONObject o = result.getJSONObject(i);
-
-                    LatLng ocorrencia = new LatLng(Double.parseDouble(o.getString("latitude")), Double.parseDouble(o.getString("longitude")));
-                    mMap.addMarker(new MarkerOptions().position(ocorrencia).title(o.getString("titulo")).snippet(String.valueOf(o)));
-
-                }
-
-            } else {
-                new ListOccurrenceTask().execute();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.showInfoWindow();
+                return true;
             }
+        });
 
-            LatLng moveCamera = new LatLng(-16.0648249, -48.0525738);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(moveCamera, 10));
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String json = (String) jsonOcorrencia.getText();
+                //visualizarOcorrencia(json);
 
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    String jsonOcorrencia = marker.getSnippet();
-                    visualizarOcorrencia(jsonOcorrencia);
-                }
-            });
+                Intent ocorrenciaIntent = new Intent(OcorrenciaActivity.ACAO_OCORRENCIA);
+                ocorrenciaIntent.addCategory(OcorrenciaActivity.CATEGORIA_OCORRENCIA);
+                ocorrenciaIntent.putExtra("json_ocorrencia", json);
+                startActivity(ocorrenciaIntent);
+            }
+        });
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        //permite que o mapa seja recriado
+        btnAtualizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                atualizaOcorrencias();
+
+            }
+        });
+
     }
 
-
-
-    public void visualizarOcorrencia(String jsonOcorrencia) {
-
-        Intent ocorrenciaIntent = new Intent(OcorrenciaActivity.ACAO_OCORRENCIA);
-        ocorrenciaIntent.addCategory(OcorrenciaActivity.CATEGORIA_OCORRENCIA);
-        ocorrenciaIntent.putExtra("json_ocorrencia", jsonOcorrencia);
-        startActivity(ocorrenciaIntent);
-
-    }
 
     public void listarUltimasOcorrencias(View v) {
 
@@ -148,16 +143,128 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requisicaoDado, int resultadoDado, Intent dado) {
-        if(requisicaoDado == REQUEST_IMAGE_CAPTURE && resultadoDado == RESULT_OK) {
-            Bundle extras = dado.getExtras();
-            Bitmap imagemBitmap = (Bitmap) extras.get("data");
+        //if(requisicaoDado == REQUEST_IMAGE_CAPTURE && resultadoDado == RESULT_OK) {
+        switch(requisicaoDado) {
+            case REQUEST_IMAGE_CAPTURE:
+                Bundle extras = dado.getExtras();
+                Bitmap imagemBitmap = (Bitmap) extras.get("data");
+                irParaIncluirOcorrencia(imagemBitmap);
+                break;
+            case REQUEST_INCLUIR:
+                atualizaOcorrencias();
+                break;
+        }
+        //}
+    }
 
-            //chama a activity responsável por fornecer interface para prenchimento das informações da ocorrência
-            Intent intent = new Intent(IncluirOcorrenciaActivity.ACAO_INCLUIR_OCORRENCIA);
-            intent.addCategory(IncluirOcorrenciaActivity.CATEGORIA_INCLUIR_OCORRENCIA);
-            intent.putExtra("imagem", imagemBitmap);
-            intent.putExtra("file_name", uriSaveImage);
-            startActivity(intent);
+    public void irParaIncluirOcorrencia (Bitmap imagemBitmap){
+
+        //chama a activity responsável por fornecer interface para prenchimento das informações da ocorrência
+        Intent intent = new Intent(IncluirOcorrenciaActivity.ACAO_INCLUIR_OCORRENCIA);
+        intent.addCategory(IncluirOcorrenciaActivity.CATEGORIA_INCLUIR_OCORRENCIA);
+        intent.putExtra("imagem", imagemBitmap);
+        intent.putExtra("file_name", uriSaveImage);
+        startActivityForResult(intent, REQUEST_INCLUIR);
+
+    }
+
+
+    private void atualizaOcorrencias(){
+        mMap.clear();
+        new ListOccurrenceTask().execute();
+
+        prepararMapa("semFiltro");
+
+    }
+
+//    private void filtrarOcorrencias() {
+//        prepararMapa();
+//    }
+
+    public void prepararMapa(String filtro) {
+
+        try {
+
+            if (resultx != null) {
+                for (int i = 0; i < resultx.length(); i++) {
+
+                    o = resultx.getJSONObject(i);
+
+//                    if(filtro != "semFiltro") {
+//                        if (Integer.parseInt(o.getString("id_categoria")) == Integer.parseInt(filtro)) {
+
+                            Ocorrencia ocorrencia = new Ocorrencia();
+                            ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
+                            ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
+                            ocorrencia.setTitulo(o.getString("titulo"));
+                            ocorrencia.setId(Integer.parseInt(o.getString("id")));
+                            ocorrencia.setDescricao(o.getString("descricao"));
+                            ocorrencia.setImagem(o.getString("foto"));
+                            ocorrencia.setJSON(String.valueOf(o));
+
+                            LatLng coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(coordenadas);
+
+                            Marker marcador = mMap.addMarker(markerOptions);
+
+                            hashMapMarcadores.put(marcador, ocorrencia);
+
+                            mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
+
+//                        }
+//                    }
+
+                }
+            } else {
+                Toast.makeText(MapsActivity.this, "Não foi possível carregar o mapa.", Toast.LENGTH_LONG).show();
+            }
+            LatLng moveCamera = new LatLng(-16.0648249, -48.0525738);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(moveCamera, 10));
+        } catch (JSONException e) {
+            Toast.makeText(MapsActivity.this, "Falha ao carregar os dados", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        } catch (NumberFormatException ne) {
+            Toast.makeText(MapsActivity.this, "Falha ao carregar os dados", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+    public class MarkerInfoWindownAdapter implements GoogleMap.InfoWindowAdapter {
+        LayoutInflater inflater;
+
+        public MarkerInfoWindownAdapter() {
+
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            View v = getLayoutInflater().inflate(R.layout.informacoes_marcador, null);
+
+            Ocorrencia ocorrencia = hashMapMarcadores.get(marker);
+
+            TextView titulo = (TextView) v.findViewById(R.id.textoInfo);
+            jsonOcorrencia = (TextView) v.findViewById(R.id.json_ocorrencia);
+            ImageView imagemOcorrencia = (ImageView) v.findViewById(R.id.imagemInfoWindown);
+
+            titulo.setText(ocorrencia.getTitulo());
+            jsonOcorrencia.setText(ocorrencia.getJSON());
+
+            String urlImagem = Uri.parse("http://michaelfelipe.com/app/uploads/" + ocorrencia.getImagem()).toString();
+
+            //ImageLoader imageLoader = ImageLoader.getInstance();
+
+            //imageLoader.displayImage(urlImagem, imagemOcorrencia);
+            //id_ocorrencia.setText(ocorrencia.getId());
+
+            return v;
         }
     }
 
@@ -181,15 +288,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 JSONObject jsonObject = new JSONObject(content);
 
                 //recupera conteúdo json com atributo "content"
-                JSONArray ocorrencias = jsonObject.getJSONArray("content");
+                resultx = jsonObject.getJSONArray("content");
 
-                if(ocorrencias.length() > 0) {
-                    result = ocorrencias;
-                } else {
-                    result = null;
-                }
-
-                return result;
+                return resultx;
 
             } catch(Exception e) {
                 return null;
