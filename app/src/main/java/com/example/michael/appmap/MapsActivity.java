@@ -76,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        prepararMapa();
+        prepararMapa("semFiltro");
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -173,11 +173,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.clear();
         new ListOccurrenceTask().execute();
 
-        prepararMapa();
+        prepararMapa("semFiltro");
 
     }
 
-    public void prepararMapa() {
+//    private void filtrarOcorrencias() {
+//        prepararMapa();
+//    }
+
+    public void prepararMapa(String filtro) {
 
         try {
 
@@ -186,25 +190,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     o = resultx.getJSONObject(i);
 
-                    Ocorrencia ocorrencia = new Ocorrencia();
-                    ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
-                    ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
-                    ocorrencia.setTitulo(o.getString("titulo"));
-                    ocorrencia.setId(Integer.parseInt(o.getString("id")));
-                    ocorrencia.setDescricao(o.getString("descricao"));
-                    ocorrencia.setImagem(o.getString("foto"));
-                    ocorrencia.setJSON(String.valueOf(o));
+//                    if(filtro != "semFiltro") {
+//                        if (Integer.parseInt(o.getString("id_categoria")) == Integer.parseInt(filtro)) {
 
-                    LatLng coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+                            Ocorrencia ocorrencia = new Ocorrencia();
+                            ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
+                            ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
+                            ocorrencia.setTitulo(o.getString("titulo"));
+                            ocorrencia.setId(Integer.parseInt(o.getString("id")));
+                            ocorrencia.setDescricao(o.getString("descricao"));
+                            ocorrencia.setImagem(o.getString("foto"));
+                            ocorrencia.setJSON(String.valueOf(o));
 
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(coordenadas);
+                            LatLng coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
 
-                    Marker marcador = mMap.addMarker(markerOptions);
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(coordenadas);
 
-                    hashMapMarcadores.put(marcador, ocorrencia);
+                            Marker marcador = mMap.addMarker(markerOptions);
 
-                    mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
+                            hashMapMarcadores.put(marcador, ocorrencia);
+
+                            mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
+
+//                        }
+//                    }
+
                 }
             } else {
                 Toast.makeText(MapsActivity.this, "Não foi possível carregar o mapa.", Toast.LENGTH_LONG).show();

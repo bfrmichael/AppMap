@@ -113,8 +113,7 @@ public class IncluirOcorrenciaActivity extends Activity {
         ocorrencia.put("longitude", String.valueOf(o.getLongitude()));
         ocorrencia.put("id_category", String.valueOf(idCategoria));
         ocorrencia.put("id_status", "1");
-        ocorrencia.put("email_user", o.getEmail());
-        ocorrencia.put("id_user", "1");
+        ocorrencia.put("email", o.getEmail());
         ocorrencia.put("image", encodeImageString);
         ocorrencia.put("file_name", String.valueOf(fileNameImage));
 
