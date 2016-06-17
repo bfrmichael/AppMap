@@ -12,6 +12,24 @@ public class Ocorrencia {
     private Double latitude;
     private Double longitude;
     private String data;
+    private String JSON;
+    private String email;
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getJSON() {
+        return JSON;
+    }
+
+    public void setJSON(String JSON) {
+        this.JSON = JSON;
+    }
 
     public void setId(int id) {
         this.id = id;

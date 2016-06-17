@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/windowBackgroundDark">
 
     <ImageView
         android:id="@+id/imagem_ocorrencia"
@@ -10,53 +11,76 @@
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/titulo_ocorrencia" />
-
     <EditText
         android:id="@+id/titulo_ocorrencia"
+        android:hint="@string/titulo_ocorrencia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/descricao_ocorrencia" />
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:singleLine="true"
+        android:paddingLeft="5dp"
+        android:textColorHint="@color/textColorPrimaryDark"
+        android:background="@color/windowBackground"/>
 
     <EditText
         android:id="@+id/descricao_ocorrencia"
+        android:hint="@string/descricao_ocorrencia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:singleLine="true"
+        android:paddingLeft="5dp"
+        android:textColorHint="@color/textColorPrimaryDark"
+        android:background="@color/windowBackground" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/categoria_ocorrencia" />
+        android:layout_margin="5dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textColor="@color/textColorPrimaryDark"
+        android:text="@string/spinner_categoria_ocorrencia" />
 
     <Spinner
         android:id="@+id/categoria_ocorrencia"
+        android:prompt="@string/spinner_categoria_ocorrencia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/spinner_categoria_ocorrencia" >
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:background="@color/windowBackground">
     </Spinner>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="@dimen/place_autocomplete_prediction_horizontal_margin"
-        android:layout_marginBottom="@dimen/place_autocomplete_prediction_horizontal_margin"
-        android:background="@color/colorPrimary"
-        android:shadowColor="@color/colorPrimaryDark"
-        android:textColor="@color/colorTextWhite"
-        android:text="@string/button_salvar_ocorrencia"
-        android:onClick="salvarOcorrencia"/>
-
-    <TextView
-        android:id="@+id/exibir_titulo"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:stretchColumns="0,1,2">
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/email_usuario_ocorrencia"
+                android:hint="@string/usuario_ocorrencia_opcional"
+                android:inputType="textEmailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:singleLine="true"
+                android:paddingLeft="5dp"
+                android:textColorHint="@color/textColorPrimaryDark"
+                android:background="@color/windowBackground" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/textColorPrimary"
+                android:text="@string/button_salvar_ocorrencia"
+                android:onClick="salvarOcorrencia"/>
+
+        </TableRow>
+
+    </TableLayout>
 
 </LinearLayout>

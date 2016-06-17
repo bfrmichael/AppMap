@@ -1,6 +1,10 @@
 package com.example.michael.appmap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,7 +37,7 @@ public class IncluirOcorrenciaActivity extends Activity {
     private Uri fileNameImage;
     private EditText titulo;
     private EditText descricao;
-    private TextView exibir;
+    private EditText email;
     private Spinner categoria;
     private Map<String, String> ocorrencia = new HashMap<String, String>();
     public static final String ACAO_INCLUIR_OCORRENCIA = "appmap.ACAO_INCLUIR_OCORRENCIA";
@@ -60,7 +64,7 @@ public class IncluirOcorrenciaActivity extends Activity {
 
         this.titulo = (EditText) findViewById(R.id.titulo_ocorrencia);
         this.descricao = (EditText) findViewById(R.id.descricao_ocorrencia);
-        this.exibir = (TextView) findViewById(R.id.exibir_titulo);
+        this.email = (EditText) findViewById(R.id.email_usuario_ocorrencia);
 
         //converte imagem para binário
         encodeImageAsync();
@@ -70,6 +74,7 @@ public class IncluirOcorrenciaActivity extends Activity {
 
         Editable titulo  = this.titulo.getText();
         Editable descricao = this.descricao.getText();
+        Editable email = this.email.getText();
 
         Double latitude = null;
         Double longitude = null;
@@ -90,8 +95,16 @@ public class IncluirOcorrenciaActivity extends Activity {
         Ocorrencia o = new Ocorrencia();
         o.setTitulo(titulo.toString());
         o.setDescricao(descricao.toString());
+        o.setEmail(email.toString());
         o.setLatitude(latitude);
         o.setLongitude(longitude);
+
+        if( o.getLongitude() != null && o.getLongitude() != null && o.getTitulo() != null && (!o.getTitulo().equals("")) ) {
+            new InsertOccurrenceAsync().execute();
+            exibirMensagemDeConfirmacao();
+        }if( (o.getTitulo() == null || o.getTitulo().equals("") && (o.getLatitude() != null || o.getLongitude() != null)))  {
+            exibirMensagemDeRejeicao();
+        }
 
         //prepara HashMap com parâmetros que serão enviados via requisição POST pelo AsyncTask
         ocorrencia.put("name", o.getTitulo());
@@ -100,14 +113,48 @@ public class IncluirOcorrenciaActivity extends Activity {
         ocorrencia.put("longitude", String.valueOf(o.getLongitude()));
         ocorrencia.put("id_category", String.valueOf(idCategoria));
         ocorrencia.put("id_status", "1");
+        ocorrencia.put("email_user", o.getEmail());
         ocorrencia.put("id_user", "1");
         ocorrencia.put("image", encodeImageString);
         ocorrencia.put("file_name", String.valueOf(fileNameImage));
 
         new InsertOccurrenceAsync().execute();
 
-        this.exibir.setText("Ocorrência cadastrada. Obrigado!");
+    }
 
+    public void exibirMensagemDeConfirmacao(){
+        final AlertDialog.Builder alertaConfimacaoBuilder = new AlertDialog.Builder(this);
+
+        alertaConfimacaoBuilder.setTitle("Sucesso");
+        alertaConfimacaoBuilder.setMessage("Ocorrência incluída com sucesso.");
+
+        alertaConfimacaoBuilder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                setResult(1);
+                //setResult(1, );
+                finish();
+            }
+        });
+        AlertDialog alertaConfirmacao = alertaConfimacaoBuilder.create();
+        alertaConfirmacao.show();
+    }
+
+    public void exibirMensagemDeRejeicao(){
+        final AlertDialog.Builder alertaRejeicaoBuilder = new AlertDialog.Builder(this);
+
+        alertaRejeicaoBuilder.setTitle("Falha");
+        alertaRejeicaoBuilder.setMessage("Titulo inválido.");
+
+        alertaRejeicaoBuilder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertaRejeicao = alertaRejeicaoBuilder.create();
+        alertaRejeicao.show();
     }
 
     //async para codificar imagem em formado base64

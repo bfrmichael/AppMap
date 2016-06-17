@@ -17,15 +17,17 @@
 
     <Button
         android:id="@+id/incluir_ocorrencia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:onClick="incluirOcorrencia"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="@dimen/place_autocomplete_prediction_horizontal_margin"
         android:layout_marginBottom="@dimen/place_autocomplete_prediction_horizontal_margin"
-        android:background="@color/colorPrimary"
-        android:shadowColor="@color/colorTextBlack"
-        android:textColor="@color/colorTextWhite"
-        android:text="@string/button_incluir_ocorrencia" />
+        android:background="@drawable/button_incluir_ocorrencia"
+        android:drawableTop="@drawable/ic_add_white_48dp"
+        android:elevation="4dp"
+        android:shadowColor="@color/textColorPrimaryDark"
+        android:shadowDx="-1"
+        android:shadowDy="-1"/>
 
 </FrameLayout>
