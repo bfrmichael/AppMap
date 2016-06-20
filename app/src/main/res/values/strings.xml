@@ -16,6 +16,7 @@
     <string name="spinner_categoria_ocorrencia">Selecione uma Categoria:</string>
     <string name="incluir_ocorrencia_msg_sucesso">Ocorrência cadastrada com sucesso. Obrigado!</string>
     <string name="dialog_ok">OK</string>
+    <string name="titulo_filtro">Filtrar Ocorrências</string>
     
     <string-array name="opcoes_categoria_ocorrencia">
         <item>Iluminação Pública</item>

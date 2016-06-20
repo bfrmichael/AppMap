@@ -27,7 +27,7 @@ public class UltimasActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        new ListOccurrenceTask().execute();
+        new UltimasOccurrenceTask().execute();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ultimas_ocorrencias);
@@ -50,11 +50,7 @@ public class UltimasActivity extends Activity {
     }
 
 
-    private class ListOccurrenceTask extends AsyncTask<String, Void, String[]> {
-
-        @Override
-        protected void onPreExecute() {
-        }
+    private class UltimasOccurrenceTask extends AsyncTask<String, Void, String[]> {
 
         @Override
         protected String[] doInBackground(String... params) {
