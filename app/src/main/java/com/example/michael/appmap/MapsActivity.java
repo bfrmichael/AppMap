@@ -1,5 +1,7 @@
 package com.example.michael.appmap;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -44,6 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Uri uriSaveImage;
     private JSONObject o;
     private HashMap<Marker, Ocorrencia> hashMapMarcadores = new HashMap<>();
+    LatLng coordenadas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        prepararMapa("semFiltro");
+        prepararMapa(null);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -118,6 +122,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ultimasIntent.addCategory(UltimasActivity.CATEGORIA_ULTIMAS_OCORRENCIAS);
         startActivity(ultimasIntent);
 
+    }
+
+    public void apresentarFiltro (View v){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapsActivity.this);
+
+        alertDialog.setTitle(R.string.titulo_filtro);
+        alertDialog.setItems(R.array.opcoes_categoria_ocorrencia, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mMap.clear();
+                prepararMapa(String.valueOf(which));
+                Toast.makeText(MapsActivity.this, "Ocorrências filtradas", Toast.LENGTH_LONG).show();
+            }
+        });
+        alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialogFiltro = alertDialog.create();
+        dialogFiltro.show();
     }
 
     public void incluirOcorrencia(View v) {
@@ -171,17 +198,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void atualizaOcorrencias(){
         mMap.clear();
+
         new ListOccurrenceTask().execute();
 
-        prepararMapa("semFiltro");
+        prepararMapa(null);
 
     }
 
-//    private void filtrarOcorrencias() {
-//        prepararMapa();
-//    }
-
-    public void prepararMapa(String filtro) {
+    public void prepararMapa(String categoria) {
 
         try {
 
@@ -190,31 +214,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     o = resultx.getJSONObject(i);
 
-//                    if(filtro != "semFiltro") {
-//                        if (Integer.parseInt(o.getString("id_categoria")) == Integer.parseInt(filtro)) {
+                        Ocorrencia ocorrencia = new Ocorrencia();
+                        ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
+                        ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
+                        ocorrencia.setTitulo(o.getString("titulo"));
+                        ocorrencia.setId(Integer.parseInt(o.getString("id")));
+                        ocorrencia.setDescricao(o.getString("descricao"));
+                        ocorrencia.setImagem(o.getString("foto"));
+                        ocorrencia.setJSON(String.valueOf(o));
 
-                            Ocorrencia ocorrencia = new Ocorrencia();
-                            ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
-                            ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
-                            ocorrencia.setTitulo(o.getString("titulo"));
-                            ocorrencia.setId(Integer.parseInt(o.getString("id")));
-                            ocorrencia.setDescricao(o.getString("descricao"));
-                            ocorrencia.setImagem(o.getString("foto"));
-                            ocorrencia.setJSON(String.valueOf(o));
+                    //marca no mapa todas as ocorrências
+                    if(categoria == null) {
 
-                            LatLng coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+                        coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
 
-                            MarkerOptions markerOptions = new MarkerOptions()
-                                    .position(coordenadas);
+                    } else {
 
-                            Marker marcador = mMap.addMarker(markerOptions);
+                        //filtra categorias de acordo com id passado
+                        if(Integer.parseInt(o.getString("id_categoria")) == Integer.parseInt(categoria)) {
 
-                            hashMapMarcadores.put(marcador, ocorrencia);
+                            coordenadas = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
 
-                            mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
+                        }
 
-//                        }
-//                    }
+                    }
+
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(coordenadas);
+
+                        Marker marcador = mMap.addMarker(markerOptions);
+
+                        hashMapMarcadores.put(marcador, ocorrencia);
+
+                        mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
 
                 }
             } else {
@@ -270,9 +302,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private class ListOccurrenceTask extends AsyncTask<String, Void, JSONArray> {
-
-        @Override
-        protected void onPreExecute() {}
 
         @Override
         protected JSONArray doInBackground(String... params) {
