@@ -308,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             try{
 
-                String urlJson = "http://michaelfelipe.com/app/listar-ocorrencias.php";
+                String urlJson = "http://appmap.michaelfelipe.com/listar-ocorrencias/";
 
                 String url = Uri.parse(urlJson).toString();
 
