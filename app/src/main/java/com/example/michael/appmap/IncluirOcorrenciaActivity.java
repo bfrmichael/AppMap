@@ -186,7 +186,7 @@ public class IncluirOcorrenciaActivity extends Activity {
             try {
 
                 //passa url com arquivo JSON que receberá e interpretará os parâmetros passados
-                String urlJson = "http://michaelfelipe.com/app/incluir-ocorrencia.php";
+                String urlJson = "http://appmap.michaelfelipe.com/incluir-ocorrencia/";
                 String url = Uri.parse(urlJson).toString();
 
                 //realiza requisição HTTP
