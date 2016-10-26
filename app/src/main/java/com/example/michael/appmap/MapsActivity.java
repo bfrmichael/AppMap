@@ -1,39 +1,41 @@
-package com.example.michael.appmap;
+        package com.example.michael.appmap;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.app.Activity;
+        import android.app.AlertDialog;
+        import android.content.DialogInterface;
+        import android.content.Intent;
+        import android.graphics.Bitmap;
+        import android.net.Uri;
+        import android.os.AsyncTask;
+        import android.os.Environment;
+        import android.provider.MediaStore;
+        import android.support.v4.app.FragmentActivity;
+        import android.os.Bundle;
+        import android.text.TextUtils;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.widget.Button;
+        import android.widget.ImageView;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+        import com.google.android.gms.maps.CameraUpdateFactory;
+        import com.google.android.gms.maps.GoogleMap;
+        import com.google.android.gms.maps.OnMapReadyCallback;
+        import com.google.android.gms.maps.SupportMapFragment;
+        import com.google.android.gms.maps.model.LatLng;
+        import com.google.android.gms.maps.model.Marker;
+        import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+        import org.json.JSONArray;
+        import org.json.JSONException;
+        import org.json.JSONObject;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
+        import java.io.File;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
+        import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -47,7 +49,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Uri uriSaveImage;
     private JSONObject o;
     private HashMap<Marker, Ocorrencia> hashMapMarcadores = new HashMap<>();
-    LatLng coordenadas;
+    private LatLng coordenadas;
+    private String novo_titulo = null, novo_descricao = null;
+    private Double novo_latitude = null, novo_longitude= null;
+    private boolean nova_ocorrencia = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +121,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(nova_ocorrencia == true){
+
+            atualizaOcorrencias();
+
+            Toast.makeText(this, R.string.ocorrencia_incluida , Toast.LENGTH_LONG).show();
+            nova_ocorrencia = false;
+        }
+
+
+    }
+
     public void listarUltimasOcorrencias(View v) {
 
         Intent ultimasIntent = new Intent(UltimasActivity.ACAO_ULTIMAS_OCORRENCIAS);
@@ -149,48 +174,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void incluirOcorrencia(View v) {
 
-        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
 
-        File folder = new File(Environment.getExternalStorageDirectory(), "AppMap");
-        folder.mkdirs();
+            File folder = new File(Environment.getExternalStorageDirectory(), "AppMap");
+            folder.mkdirs();
 
-        String imageUri = "app_map_" + timeStamp + ".jpg";
-        File imageName = new File(folder, imageUri);
-        //Uri uriSavemImagemHD = Uri.fromFile(imageName);
-        uriSaveImage = Uri.parse(imageUri);
+            String imageUri = "app_map_" + timeStamp + ".jpg";
+            File imageName = new File(folder, imageUri);
+            //Uri uriSavemImagemHD = Uri.fromFile(imageName);
+            uriSaveImage = Uri.parse(imageUri);
 
-        if(camera.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
+            if (camera.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(camera, REQUEST_IMAGE_CAPTURE);
+            }
+        }catch (NullPointerException ne){
+            ne.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
     }
-
 
     @Override
     protected void onActivityResult(int requisicaoDado, int resultadoDado, Intent dado) {
-        //if(requisicaoDado == REQUEST_IMAGE_CAPTURE && resultadoDado == RESULT_OK) {
         switch(requisicaoDado) {
             case REQUEST_IMAGE_CAPTURE:
-                Bundle extras = dado.getExtras();
-                Bitmap imagemBitmap = (Bitmap) extras.get("data");
-                irParaIncluirOcorrencia(imagemBitmap);
+                if(resultadoDado == RESULT_OK) {
+                    Bundle extras = dado.getExtras();
+                    Bitmap imagemBitmap = (Bitmap) extras.get("data");
+                    irParaIncluirOcorrencia(imagemBitmap);
+                }else if(resultadoDado == RESULT_CANCELED){
+                    Log.e("INFO","Usuário voltou da Atividade Incluir");
+                }else{
+                    Log.e("INFO","Usuário não utilizou  a câmera");
+                }
                 break;
             case REQUEST_INCLUIR:
-                atualizaOcorrencias();
+                if(resultadoDado == Activity.RESULT_CANCELED) {
+
+                }else if (resultadoDado == Activity.RESULT_OK){
+
+                    nova_ocorrencia = true;
+                }
                 break;
         }
-        //}
+
     }
 
     public void irParaIncluirOcorrencia (Bitmap imagemBitmap){
 
         //chama a activity responsável por fornecer interface para prenchimento das informações da ocorrência
-        Intent intent = new Intent(IncluirOcorrenciaActivity.ACAO_INCLUIR_OCORRENCIA);
-        intent.addCategory(IncluirOcorrenciaActivity.CATEGORIA_INCLUIR_OCORRENCIA);
+        Intent intent = new Intent(MarcaMapaActivity.ACAO_MARCAR_MAPA);
+        intent.addCategory(MarcaMapaActivity.CATEGORIA_MARCAR_MAPA);
         intent.putExtra("imagem", imagemBitmap);
-        intent.putExtra("file_name", uriSaveImage);
+        intent.putExtra("nome_imagem", uriSaveImage);
         startActivityForResult(intent, REQUEST_INCLUIR);
 
     }
@@ -214,14 +253,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     o = resultx.getJSONObject(i);
 
-                        Ocorrencia ocorrencia = new Ocorrencia();
-                        ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
-                        ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
-                        ocorrencia.setTitulo(o.getString("titulo"));
-                        ocorrencia.setId(Integer.parseInt(o.getString("id")));
-                        ocorrencia.setDescricao(o.getString("descricao"));
-                        ocorrencia.setImagem(o.getString("foto"));
-                        ocorrencia.setJSON(String.valueOf(o));
+                    Ocorrencia ocorrencia = new Ocorrencia();
+                    ocorrencia.setLatitude(Double.parseDouble(o.getString("latitude")));
+                    ocorrencia.setLongitude(Double.parseDouble(o.getString("longitude")));
+                    ocorrencia.setTitulo(o.getString("titulo"));
+                    ocorrencia.setId(Integer.parseInt(o.getString("id")));
+                    ocorrencia.setDescricao(o.getString("descricao"));
+                    ocorrencia.setImagem(o.getString("foto"));
+                    ocorrencia.setJSON(String.valueOf(o));
 
                     //marca no mapa todas as ocorrências
                     if(categoria == null) {
@@ -239,14 +278,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
 
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(coordenadas);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(coordenadas);
 
-                        Marker marcador = mMap.addMarker(markerOptions);
+                    Marker marcador = mMap.addMarker(markerOptions);
 
-                        hashMapMarcadores.put(marcador, ocorrencia);
+                    hashMapMarcadores.put(marcador, ocorrencia);
 
-                        mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
+                    mMap.setInfoWindowAdapter(new MarkerInfoWindownAdapter());
 
                 }
             } else {
