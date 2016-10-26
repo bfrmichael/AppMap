@@ -12,6 +12,16 @@ public class Ocorrencia {
     private Double latitude;
     private Double longitude;
     private String data;
+    private int categoria;
+
+    public int getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(int categoria) {
+        this.categoria = categoria;
+    }
+
     private String JSON;
     private String email;
 
@@ -86,5 +96,6 @@ public class Ocorrencia {
     public String getData() {
         return this.data;
     }
+
 
 }
