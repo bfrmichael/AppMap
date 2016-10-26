@@ -17,12 +17,17 @@
     <string name="incluir_ocorrencia_msg_sucesso">Ocorrência cadastrada com sucesso. Obrigado!</string>
     <string name="dialog_ok">OK</string>
     <string name="titulo_filtro">Filtrar Ocorrências</string>
-    
+    <string name="chave_google">AIzaSyAgo01ktWrHb1NHLKujw4pw26TfPVH2H5U</string>
+    <string name="ocorrencia_incluida">Ocorrência cadastrada com sucesso!</string>
+
     <string-array name="opcoes_categoria_ocorrencia">
+        <item>Selecione</item>
         <item>Iluminação Pública</item>
         <item>Saneamento Básico</item>
         <item>Limpeza Urbana</item>
         <item>Pavimentação Asfáltica</item>
-        <item>Outros</item>
+        <item>Carro abandonado</item>
     </string-array>
+    <string name="title_activity_marca_mapa">Map</string>
+    <string name="title_activity_adasdasdas">Map</string>
 </resources>
